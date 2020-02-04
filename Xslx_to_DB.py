@@ -9,7 +9,8 @@ table_check = Database.excute_Query(cursor,"select * from SampleData") #테이�
 #테이블 체크, 테이블 없으면 생성
 if table_check == -1:
     table_query = "CREATE TABLE SampleData" \
-                  "(OrderDate date, Region text, Rep text, Item text, Units num, Unit_Cost float, Total float);"
+                  "(OrderDate date, Region text, Rep text, Item text, Units num, Unit_Cost float, Total float, " \
+                  "PRIMARY KEY(OrderDate, Region, Rep, Item));"
     Database.excute_Query(cursor, table_query)
     DBconn.commit() #커밋 필수
 
