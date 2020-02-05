@@ -1,12 +1,16 @@
+"""
+파이썬 단독 실행시 사용
+import DataBase as Database
+"""
 import JUST_Q_TEST_Q.DataBase as Database
 import pandas as pd
-
 
 DBconn = Database.connect_DB() #데이터베이스 연결
 cursor = Database.CUR(DBconn) #커서 생성
 
-table_check = Database.excute_Query(cursor,"select * from SampleData") #테이블 생성 체크 쿼리
-#테이블 체크, 테이블 없으면 생성
+#테이블 생성 체크 쿼리
+table_check = Database.excute_Query(cursor,"select * from SampleData")
+#테이블 체크시 테이블 없으면 생성
 if table_check == -1:
     table_query = "CREATE TABLE SampleData" \
                   "(OrderDate date, Region text, Rep text, Item text, Units num, Unit_Cost float, Total float, " \
@@ -14,14 +18,14 @@ if table_check == -1:
     Database.excute_Query(cursor, table_query)
     DBconn.commit() #커밋 필수
 
-#Excel 불러와서 변수에 저장
+#Excel 내용 불러오기
 excel_data = pd.read_excel("Sample_Data\SampleData.xlsx",sheet_name="SalesOrders")
 
-#Excel 데이터 입력 쿼리
+#Excel 데이터 분할 및 쿼리
 for split_data in range(len(excel_data)):
     # print(excel_data.loc[split_data])
     Q_data1 = excel_data.loc[split_data]['OrderDate']
-    Q_data1 = pd.to_datetime(Q_data1) #Date타입 변환용
+    Q_data1 = pd.to_datetime(Q_data1) #Datetime으로 변환하기 위함
     Q_data2 = excel_data.loc[split_data]['Region']
     Q_data3 = excel_data.loc[split_data]['Rep']
     Q_data4 = excel_data.loc[split_data]['Item']
@@ -40,8 +44,7 @@ for split_data in range(len(excel_data)):
     Database.excute_Query(cursor, insert_query)
     DBconn.commit()
 
-
-#Excel 데이터 확인 쿼리
+#Database 데이터 확인용
 Database.excute_Query(cursor, "SELECT * FROM SampleData")
 for a in cursor.fetchall():
     print(a)
