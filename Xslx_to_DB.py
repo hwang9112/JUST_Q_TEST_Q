@@ -6,7 +6,7 @@ import JUST_Q_TEST_Q.DataBase as Database
 import pandas as pd
 
 #Excel 데이터 분할 및 쿼리
-def insert_Query(excel_data):
+def insert_Query(cursor, excel_data):
     # 테이블 생성 체크 쿼리
     table_check = Database.excute_Query(cursor, "select * from SampleData")
     # 테이블 체크시 테이블 없으면 생성
@@ -35,25 +35,36 @@ def insert_Query(excel_data):
                        + str(Q_data5) + ","  \
                        + str(Q_data6) + ","  \
                        + str(Q_data7) + ");"
-        # print(insert_query)
-        Database.excute_Query(cursor, insert_query)
-        DBconn.commit()
+
+        error_check = Database.excute_Query(cursor, insert_query)
+        # 중복 막기 위한 error 체크
+        if error_check == -1:
+            DBconn.rollback()
+        else:
+            DBconn.commit()
 
 #Database 데이터 확인
-def select_Query():
+def select_Query(cursor):
     Database.excute_Query(cursor, "SELECT * FROM SampleData")
+    for DBcontents in cursor.fetchall():
+        print(DBcontents)
+
+#Database 쿼리전달
+def send_Query(cursor, Query):
+    Database.excute_Query(cursor, Query)
     for DBcontents in cursor.fetchall():
         print(DBcontents)
 
 # main 실행 위한 부분
 if __name__ ==  '__main__':
     DBconn = Database.connect_DB() #데이터베이스 연결
-    cursor = Database.CUR(DBconn) #커서 생성
+    cursor_01 = Database.CUR(DBconn) #커서 생성
     #Excel 내용 불러오기
     excel_data = pd.read_excel("Sample_Data\SampleData.xlsx",sheet_name="SalesOrders")
     #Excel 내용 DB입력
-    insert_Query(excel_data)
-    select_Query()
+    insert_Query(cursor_01, excel_data)
+    select_Query(cursor_01)
+    send_Query(cursor_01, "select region from SampleData")
     Database.disconnect_DB(DBconn) #데이터베이스 종료
 
 
