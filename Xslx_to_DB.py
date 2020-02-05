@@ -5,7 +5,7 @@ import DataBase as Database
 import JUST_Q_TEST_Q.DataBase as Database
 import pandas as pd
 
-#Excel 데이터 분할 및 쿼리
+#Excel 데이터 분할 및 쿼리 함수
 def insert_Query(cursor, excel_data):
     # 테이블 생성 체크 쿼리
     table_check = Database.excute_Query(cursor, "select * from SampleData")
@@ -43,17 +43,15 @@ def insert_Query(cursor, excel_data):
         else:
             DBconn.commit()
 
-#Database 데이터 확인
-def select_Query(cursor):
-    Database.excute_Query(cursor, "SELECT * FROM SampleData")
-    for DBcontents in cursor.fetchall():
-        print(DBcontents)
-
-#Database 쿼리전달
+#Database 쿼리 전달 및 출력 함수
 def send_Query(cursor, Query):
-    Database.excute_Query(cursor, Query)
-    for DBcontents in cursor.fetchall():
-        print(DBcontents)
+    Query_result = Database.excute_Query(cursor, Query)
+    #쿼리 결과가 에러일 경우 예외처리 위함
+    if Query_result == -1:
+        pass
+    else:
+        for DBcontents in Query_result:
+            print("result = " + str(DBcontents))
 
 # main 실행 위한 부분
 if __name__ ==  '__main__':
@@ -63,8 +61,9 @@ if __name__ ==  '__main__':
     excel_data = pd.read_excel("Sample_Data\SampleData.xlsx",sheet_name="SalesOrders")
     #Excel 내용 DB입력
     insert_Query(cursor_01, excel_data)
-    select_Query(cursor_01)
-    send_Query(cursor_01, "select region from SampleData")
+    send_Query(cursor_01, "SELECT * FROM SampleData") #내용 확인
+    # send_Query(cursor_01, "select region from SampleData")
+    # send_Query(cursor_01, "drop table SampleData") #Table 지우기
     Database.disconnect_DB(DBconn) #데이터베이스 종료
 
 
