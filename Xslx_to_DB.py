@@ -1,6 +1,17 @@
 """
 파이썬 단독 실행시 사용
-import DataBase as Database
+import DataBase as Databasegit
+"""
+
+"""
+개발사양
+Python 3.8, Pycharm 2019.3.2, Windows 10 1909
+
+사용 라이브러리 :Pandas, Xlrd
+
+라이브러리 설치 커맨드 
+pip install pandas
+pip install xlrd 
 """
 import JUST_Q_TEST_Q.DataBase as Database
 import pandas as pd
